@@ -64,6 +64,13 @@ def extract():
     # Нужны для соответсвия идентификатора и человекочитаемого названия
     actors = {row[0]: row[1] for row in
               cursor.execute('select * from actors where name != "N/A"')}
+
+    """
+    Стоит учесть, что сценаристы могут повторяться, поэтому нужно осуществить выборку уникальных данных(без поторений). 
+    Советую посмотреть в сторону использования дополнительных ключевых слов при операторе select. 
+    https://www.sqlitetutorial.net/sqlite-select/
+    https://www.sqlitetutorial.net/sqlite-select-distinct/
+    """
     writers = {row[0]: row[1] for row in
                cursor.execute('select * from writers where name != "N/A"')}
 
