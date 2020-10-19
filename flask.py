@@ -26,6 +26,11 @@ def movie_list():
     validate = validate_args(request.args)
 
     if not validate['success']:
+        """
+        Лучше избегать применения магических чисел, почитай в статье, 
+        какой практикой лучше воспользоваться, чтобы избавится от них:
+        https://refactoring.guru/ru/replace-magic-number-with-symbolic-constant 
+        """
         return abort(422)
 
     defaults = {
@@ -97,6 +102,10 @@ def movie_list():
     return jsonify([doc['_source'] for doc in search_res['hits']['hits']])
 
 
+"""
+У нас к базе идентификаторы предсталяют собой целые числа, поэтому тут вместо string 
+лучше указать другой преобразователь для movie_id. 
+"""
 @app.route('/api/movies/<string:movie_id>')
 def get_movie(movie_id):
     """
@@ -107,6 +116,17 @@ def get_movie(movie_id):
     es_client = ES.Elasticsearch([{'host': '192.168.11.128', 'port': 9200}], )
 
     if not es_client.ping():
+        """
+        Тут стоит сделать лучше: 
+        1) Давай залогируем данную ошибку
+        2) Нужно отдать ошибку, с соответствующим сообщением.
+        В текущим контексте у нас необходимо вывести ошибку подключания к сервису ES 
+        и прервать дальнейшую обработку.
+        Команда print() не прервет дальнейшее выполнение кода, 
+        а это значит что у нас дальше будут валиться ошибки. 
+        Посмотрим правильное формирование ошибок и добавь это сюда:
+        https://docs.python.org/3/tutorial/errors.html#raising-exceptions
+        """
         print('oh(')
 
     search_result = es_client.get(index='movies', id=movie_id, ignore=404)
